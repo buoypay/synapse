@@ -1,4 +1,4 @@
-export VERSION := "1.71.4-gtxn"
+export VERSION := "1.71.5-gtxn"
 
 docker-build:
   DOCKER_BUILDKIT=1 docker build --platform linux/amd64 -t matrixdotorg/synapse:local -f docker/Dockerfile .

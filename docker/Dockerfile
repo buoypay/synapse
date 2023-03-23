@@ -51,7 +51,10 @@ WORKDIR /synapse
 COPY pyproject.toml poetry.lock /synapse/
 
 # Copy in our custom modules so they build :)
-COPY ./modules /synapse/
+COPY ./modules /synapse/modules/
+COPY ./modules/cognito /synapse/modules/cognito
+RUN ls -la /synapse/modules
+
 
 # If specified, we won't verify the hashes of dependencies.
 # This is only needed if the hashes of dependencies cannot be checked for some
@@ -65,8 +68,10 @@ ARG TEST_ONLY_IGNORE_POETRY_LOCKFILE
 # Export the dependencies, but only if we're actually going to use the Poetry lockfile.
 # Otherwise, just create an empty requirements file so that the Dockerfile can
 # proceed.
+# Note to future lewis - I hardcoded --without-hashes, as I couldn't get the 'TEST_ONLY_SKIP_DEP_HASH_VERIFICATION'
+# var to evaluate properly
 RUN if [ -z "$TEST_ONLY_IGNORE_POETRY_LOCKFILE" ]; then \
-  /root/.local/bin/poetry export --extras all -o /synapse/requirements.txt ${TEST_ONLY_SKIP_DEP_HASH_VERIFICATION:+--without-hashes}; \
+  /root/.local/bin/poetry export --extras all -o /synapse/requirements.txt --without-hashes; \
   else \
   touch /synapse/requirements.txt; \
   fi
@@ -111,6 +116,12 @@ RUN curl -sSf https://sh.rustup.rs | sh -s -- -y --no-modify-path --default-tool
 # set to true, so we expose it as a build-arg.
 ARG CARGO_NET_GIT_FETCH_WITH_CLI=false
 ENV CARGO_NET_GIT_FETCH_WITH_CLI=$CARGO_NET_GIT_FETCH_WITH_CLI
+
+# Copy in our custom modules so they build :)
+COPY ./modules /synapse/modules/
+COPY ./modules/cognito /synapse/modules/cognito
+RUN ls -la /synapse/modules
+
 
 # To speed up rebuilds, install all of the dependencies before we copy over
 # the whole synapse project, so that this layer in the Docker cache can be
