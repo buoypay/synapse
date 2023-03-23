@@ -14,13 +14,19 @@ from twisted.web.server import Request
 
 from synapse.module_api import ModuleApi
 
+if TYPE_CHECKING:
+    from synapse.server import HomeServer
+
+
 logger = logging.getLogger(__name__)
 
 
 class DemoResource(DirectServeHtmlResource):
-    def __init__(self, config):
+    def __init__(self, config, api: ModuleApi):
         super(DemoResource, self).__init__()
         self.config = config
+        self.api = api
+
 
     class PostBody(RequestBodyModel):
         access_token: StrictStr
@@ -40,7 +46,7 @@ class DemoResource(DirectServeHtmlResource):
         # - other security???
 
         # TODO: register the user if not exists
-        new_user = await self._hs.get_registration_handler().register_user(
+        new_user = await self.api._hs.get_registration_handler().register_user(
             localpart="test1",
             bind_emails=["test1@customer.com"],
             admin=False,
@@ -48,7 +54,7 @@ class DemoResource(DirectServeHtmlResource):
         logger.info("Registered new user %s", new_user)
 
         # internal call to get the login token
-        login_token = await self._hs.get_auth_handler().create_login_token_for_user_id(
+        login_token = await self.api._hs.get_auth_handler().create_login_token_for_user_id(
             "test1",
             # TODO: make this shorter
             1000 * 60 * 30,
@@ -69,7 +75,7 @@ class Cognito:
 
         self.api.register_web_resource(
             path="/_synapse/modules/cognito/login",
-            resource=DemoResource(self.config),
+            resource=DemoResource(self.config, self.api),
         )
 
     @staticmethod
