@@ -12,8 +12,9 @@ class DemoResource(Resource):
         self.config = config
 
     def render_GET(self, request: Request):
+        print('hello world')
         # name = request.args.get(b"name")[0]
-        request.setHeader(b"Content-Type", b"application/json")
+        # request.setHeader(b"Content-Type", b"application/json")
         return json.dumps({"hello": True})
 
 
