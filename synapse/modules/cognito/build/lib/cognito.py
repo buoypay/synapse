@@ -12,9 +12,9 @@ class DemoResource(Resource):
         self.config = config
 
     def render_GET(self, request: Request):
-        # name = request.args.get(b"name")[0]
+        name = request.args.get(b"name")[0]
         request.setHeader(b"Content-Type", b"application/json")
-        return json.dumps({"hello": True})
+        return json.dumps({"hello": name})
 
 
 class Cognito:
@@ -27,6 +27,16 @@ class Cognito:
             resource=DemoResource(self.config),
         )
 
+        self.api.register_spam_checker_callbacks(
+            user_may_create_room=self.user_may_create_room,
+        )
+
     @staticmethod
     def parse_config(config):
         return config
+
+    async def user_may_create_room(self, user: str) -> bool:
+        if user == "@evilguy:example.com":
+            return False
+
+        return True
