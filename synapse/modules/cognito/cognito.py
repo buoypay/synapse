@@ -53,7 +53,7 @@ class DemoResource(DirectServeHtmlResource):
             REGION,
             USERPOOL_ID,
             app_client_id=APP_CLIENT_ID,
-            testmode=True
+            testmode=not DEMO_SHOULD_CHECK_TOKEN_EXPIRY
           )
           logger.info("Verified access_token")
         except Exception:
@@ -67,7 +67,7 @@ class DemoResource(DirectServeHtmlResource):
             REGION,
             USERPOOL_ID,
             app_client_id=APP_CLIENT_ID,
-            testmode=DEMO_SHOULD_CHECK_TOKEN_EXPIRY
+            testmode=not DEMO_SHOULD_CHECK_TOKEN_EXPIRY
           )
           logger.info("Verified user from `id_token` with email: %s", verified_claims['email'])
         except Exception:
@@ -88,7 +88,7 @@ class DemoResource(DirectServeHtmlResource):
           await self.api._hs.get_registration_handler().register_user(
             localpart=cognito_username_localpart,
             bind_emails=[verified_claims['email']],
-            admin=DEMO_SHOULD_CHECK_TOKEN_EXPIRY,
+            admin=False,
           )
           logger.info("Registered new user %s", user_id)
         except SynapseError:
