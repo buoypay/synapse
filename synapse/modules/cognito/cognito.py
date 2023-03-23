@@ -20,6 +20,7 @@ class DemoResource(Resource):
 
 class Cognito:
     def __init__(self, config: dict, api: ModuleApi):
+        print('Starting Cognito module')
         self.config = config
         self.api = api
 
