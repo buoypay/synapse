@@ -1,9 +1,13 @@
 import json
+import logging
+
 
 from twisted.web.resource import Resource
 from twisted.web.server import Request
 
 from synapse.module_api import ModuleApi
+
+logger = logging.getLogger(__name__)
 
 
 class DemoResource(Resource):
@@ -12,7 +16,7 @@ class DemoResource(Resource):
         self.config = config
 
     def render_GET(self, request: Request):
-        print('hello world')
+        logger.info("/_synapse/client/demo/hello")
         # name = request.args.get(b"name")[0]
         # request.setHeader(b"Content-Type", b"application/json")
         return json.dumps({"hello": True})
@@ -20,7 +24,8 @@ class DemoResource(Resource):
 
 class Cognito:
     def __init__(self, config: dict, api: ModuleApi):
-        print('Starting Cognito module')
+        logger.info("Starting Cognito module")
+
         self.config = config
         self.api = api
 
