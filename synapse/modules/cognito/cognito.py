@@ -52,15 +52,18 @@ class DemoResource(DirectServeHtmlResource):
         # - cognito client's public key (inject from Env Var)
         # - access token hasn't expired
         # - other security???
-        verified_claims: dict = cognitojwt.decode(
-          id_token,
-          REGION,
-          USERPOOL_ID,
-          app_client_id=APP_CLIENT_ID,
-          # todo: set to False!
-          testmode=True  # Disable token expiration check for testing purposes
-        )
-        logger.info("Verified user from `id_token` with email: %s", verified_claims['email'])
+        try:
+          verified_claims: dict = cognitojwt.decode(
+            id_token,
+            REGION,
+            USERPOOL_ID,
+            app_client_id=APP_CLIENT_ID,
+            testmode=False
+          )
+          logger.info("Verified user from `id_token` with email: %s", verified_claims['email'])
+        except Exception:
+          body = json.dumps({"error": "could not validate id_token"}).encode('utf-8')
+          return 401, body
         
         # derive the username from the customer's email address
         cognito_username_localpart = verified_claims['email'].split('@')[0].replace('+', '-')
