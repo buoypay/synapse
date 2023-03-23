@@ -1,10 +1,10 @@
 import json
+import os
 import logging
 from typing import TYPE_CHECKING, Tuple
 
 import cognitojwt
 from pydantic import StrictStr
-
 from twisted.web.server import Request
 
 from synapse.api.errors import SynapseError
@@ -14,18 +14,14 @@ from synapse.http.servlet import (
 )
 from synapse.module_api import ModuleApi
 from synapse.rest.models import RequestBodyModel
-from synapse.types import RoomAlias, UserID, create_requester
-
-if TYPE_CHECKING:
-    from synapse.server import HomeServer
+from synapse.types import UserID
 
 
 logger = logging.getLogger(__name__)
 
-# TODO: get from env var
-REGION = "eu-central-1"
-USERPOOL_ID = "eu-central-1_C0omejJNP"
-APP_CLIENT_ID = "61aa9r86j7hput4nod62nang7i"
+REGION = os.environ.get('AWS_REGION')
+USERPOOL_ID = os.environ.get('AWS_COGNITO_USERPOOL_ID')
+APP_CLIENT_ID = os.environ.get('AWS_COGNITO_APP_CLIENT_ID')
 
 class DemoResource(DirectServeHtmlResource):
     def __init__(self, config, api: ModuleApi):
@@ -42,16 +38,25 @@ class DemoResource(DirectServeHtmlResource):
         logger.info("/_synapse/modules/cognito/login")
 
         # get the access_token and id_token from request
-        body = parse_and_validate_json_object_from_request(request, self.PostBody)
-        
-        # TODO: verify access token? Or can we just use the id_token?
+        body = parse_and_validate_json_object_from_request(request, self.PostBody)        
         access_token = body.access_token
         id_token = body.id_token
 
-        # TODO: parse the token, make sure it is valid based on:
-        # - cognito client's public key (inject from Env Var)
-        # - access token hasn't expired
-        # - other security???
+        # verify the access_token
+        try:
+          cognitojwt.decode(
+            access_token,
+            REGION,
+            USERPOOL_ID,
+            app_client_id=APP_CLIENT_ID,
+            testmode=False
+          )
+          logger.info("Verified access_token")
+        except Exception:
+          body = json.dumps({"error": "could not validate access_token"}).encode('utf-8')
+          return 401, body
+
+        # verify the id_token
         try:
           verified_claims: dict = cognitojwt.decode(
             id_token,
