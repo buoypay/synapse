@@ -3,6 +3,9 @@ import logging
 from typing import TYPE_CHECKING, Tuple
 from pydantic import Extra, StrictStr
 
+from synapse.api.errors import (
+    SynapseError,
+)
 
 from synapse.http.servlet import (
     parse_string,
@@ -45,17 +48,28 @@ class DemoResource(DirectServeHtmlResource):
         # - access token hasn't expired
         # - other security???
 
-        # TODO: register the user if not exists
-        new_user = await self.api._hs.get_registration_handler().register_user(
-            localpart="test2",
-            bind_emails=["test2@customer.com"],
+        cognito_username_localpart = "test3"
+        # TODO: convert from above, don't statically encode the HS url
+        cognito_username_full = "@test3:bouypay.com"
+        # Check ther username
+        try:
+          await self.api._hs.get_registration_handler().check_username(
+            localpart=cognito_username_localpart,
+          )
+           # TODO: register the user if not exists
+          await self.api._hs.get_registration_handler().register_user(
+            localpart=cognito_username_localpart,
+            bind_emails=["test3@customer.com"],
             admin=False,
-        )
-        logger.info("Registered new user %s", new_user)
+          )
+          logger.info("Registered new user %s", cognito_username_full)
+        except SynapseError:
+            logger.info("localpart already registered: %s", cognito_username_localpart)
 
+  
         # internal call to get the login token
         login_token = await self.api._hs.get_auth_handler().create_login_token_for_user_id(
-            new_user,
+            cognito_username_full,
             # TODO: make this shorter
             1000 * 60 * 30,
             "cognito",
