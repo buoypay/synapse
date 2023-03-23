@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Tuple
 
 
 from synapse.http.servlet import parse_string
-from twisted.web.resource import Resource
+from synapse.http.server import DirectServeHtmlResource
 from twisted.web.server import Request
 
 from synapse.module_api import ModuleApi
@@ -12,7 +12,7 @@ from synapse.module_api import ModuleApi
 logger = logging.getLogger(__name__)
 
 
-class DemoResource(Resource):
+class DemoResource(DirectServeHtmlResource):
     def __init__(self, config):
         super(DemoResource, self).__init__()
         self.config = config
