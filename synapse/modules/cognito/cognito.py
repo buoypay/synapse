@@ -1,5 +1,7 @@
 import json
 import logging
+from typing import TYPE_CHECKING, Tuple
+
 
 from synapse.http.servlet import parse_string
 from twisted.web.resource import Resource
@@ -15,7 +17,7 @@ class DemoResource(Resource):
         super(DemoResource, self).__init__()
         self.config = config
 
-    def render_POST(self, request: Request):
+    async def _async_render_POST(self, request: Request) -> Tuple[int, bytes]:
         logger.info("/_synapse/modules/cognito/login")
 
         # get the access_token and id_token from request
@@ -30,12 +32,13 @@ class DemoResource(Resource):
         # TODO: internal call to get the login token
 
         request.setHeader(b"Content-Type", b"application/json")
-        return json.dumps({"login_token": "12345"}).encode('utf-8')
+        body = json.dumps({"login_token": "12345"}).encode('utf-8')
+
+        return 200, body
     
 class Cognito:
     def __init__(self, config: dict, api: ModuleApi):
         logger.info("Starting Cognito module")
-        print("Starting Cognito module2")
 
         self.config = config
         self.api = api
