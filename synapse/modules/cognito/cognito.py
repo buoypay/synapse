@@ -55,7 +55,7 @@ class DemoResource(DirectServeHtmlResource):
 
         # internal call to get the login token
         login_token = await self.api._hs.get_auth_handler().create_login_token_for_user_id(
-            new_user
+            new_user,
             # TODO: make this shorter
             1000 * 60 * 30,
             "cognito",
