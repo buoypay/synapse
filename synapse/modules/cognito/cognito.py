@@ -19,8 +19,9 @@ class DemoResource(Resource):
         # logger.info("/_synapse/client/demo/hello")
         print('hello world')
         # name = request.args.get(b"name")[0]
-        request.setHeader(b"Content-Type", b"application/json")
-        return json.dumps({"hello": True})
+        # request.setHeader(b"Content-Type", b"application/json")
+        # return json.dumps({"hello": True})
+        return "<html>Hello, world!</html>"
 
 
 class Cognito:
