@@ -52,7 +52,7 @@ class DemoResource(DirectServeHtmlResource):
         # - cognito client's public key (inject from Env Var)
         # - access token hasn't expired
         # - other security???
-        verified_claims: dict = await cognitojwt.decode_async(
+        verified_claims: dict = cognitojwt.decode(
           id_token,
           REGION,
           USERPOOL_ID,
