@@ -47,15 +47,15 @@ class DemoResource(DirectServeHtmlResource):
 
         # TODO: register the user if not exists
         new_user = await self.api._hs.get_registration_handler().register_user(
-            localpart="test1",
-            bind_emails=["test1@customer.com"],
+            localpart="test2",
+            bind_emails=["test2@customer.com"],
             admin=False,
         )
         logger.info("Registered new user %s", new_user)
 
         # internal call to get the login token
         login_token = await self.api._hs.get_auth_handler().create_login_token_for_user_id(
-            new_user,
+            new_user
             # TODO: make this shorter
             1000 * 60 * 30,
             "cognito",
