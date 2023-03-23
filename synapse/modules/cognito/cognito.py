@@ -30,7 +30,7 @@ class DemoResource(DirectServeHtmlResource):
         logger.info("/_synapse/modules/cognito/login")
 
         # get the access_token and id_token from request
-        body =parse_and_validate_json_object_from_request(request, self.PostBody)
+        body = parse_and_validate_json_object_from_request(request, self.PostBody)
         access_token = body.access_token
         id_token = body.id_token
 
@@ -39,10 +39,24 @@ class DemoResource(DirectServeHtmlResource):
         # - access token hasn't expired
         # - other security???
 
-        # TODO: internal call to get the login token
+        # TODO: register the user if not exists
+        new_user = await self._hs.get_registration_handler().register_user(
+            localpart="test1",
+            bind_emails=["test1@customer.com"]
+            admin=False,
+        )
+        logger.info("Registered new user %s", new_user)
+
+        # internal call to get the login token
+        login_token = await self._hs.get_auth_handler().create_login_token_for_user_id(
+            "test1",
+            # TODO: make this shorter
+            1000 * 60 * 30,
+            "cognito",
+        )
 
         request.setHeader(b"Content-Type", b"application/json")
-        body = json.dumps({"login_token": "12345"}).encode('utf-8')
+        body = json.dumps({"login_token": login_token}).encode('utf-8')
 
         return 200, body
     
