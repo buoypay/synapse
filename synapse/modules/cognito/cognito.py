@@ -1,10 +1,15 @@
 import json
 import logging
 from typing import TYPE_CHECKING, Tuple
+from pydantic import Extra, StrictStr
 
 
-from synapse.http.servlet import parse_string
+from synapse.http.servlet import (
+    parse_string,
+    parse_and_validate_json_object_from_request,
+)
 from synapse.http.server import DirectServeHtmlResource
+from synapse.rest.models import RequestBodyModel
 from twisted.web.server import Request
 
 from synapse.module_api import ModuleApi
@@ -17,12 +22,17 @@ class DemoResource(DirectServeHtmlResource):
         super(DemoResource, self).__init__()
         self.config = config
 
+    class PostBody(RequestBodyModel):
+        access_token: StrictStr
+        id_token: StrictStr
+
     async def _async_render_POST(self, request: Request) -> Tuple[int, bytes]:
         logger.info("/_synapse/modules/cognito/login")
 
         # get the access_token and id_token from request
-        access_token = parse_string(request, "access_token", required=True)
-        id_token = parse_string(request, "id_token", required=True)
+        body =parse_and_validate_json_object_from_request(request, self.PostBody)
+        access_token = body.access_token
+        id_token = body.id_token
 
         # TODO: parse the token, make sure it is valid based on:
         # - cognito client's public key (inject from Env Var)
