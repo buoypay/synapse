@@ -1,14 +1,9 @@
 import json
 import logging
-import cognitojwt
-
 from typing import TYPE_CHECKING, Tuple
 
-from authlib.jose import JsonWebToken, JWTClaims
-from authlib.jose.errors import InvalidClaimError, JoseError, MissingClaimError
-from pydantic import Extra, StrictStr
-
-from synapse.types import RoomAlias, UserID, create_requester
+import cognitojwt
+from pydantic import StrictStr
 
 from twisted.web.server import Request
 
@@ -16,10 +11,10 @@ from synapse.api.errors import SynapseError
 from synapse.http.server import DirectServeHtmlResource
 from synapse.http.servlet import (
     parse_and_validate_json_object_from_request,
-    parse_string,
 )
 from synapse.module_api import ModuleApi
 from synapse.rest.models import RequestBodyModel
+from synapse.types import RoomAlias, UserID, create_requester
 
 if TYPE_CHECKING:
     from synapse.server import HomeServer
