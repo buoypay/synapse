@@ -19,9 +19,13 @@ from synapse.types import UserID
 
 logger = logging.getLogger(__name__)
 
+def str2bool(v):
+  return v.lower() in ("yes", "true", "t", "1")
+
 REGION = os.environ.get('AWS_REGION')
 USERPOOL_ID = os.environ.get('AWS_COGNITO_USERPOOL_ID')
 APP_CLIENT_ID = os.environ.get('AWS_COGNITO_APP_CLIENT_ID')
+DEMO_SHOULD_CHECK_TOKEN_EXPIRY = str2bool(os.environ.get('DEMO_SHOULD_CHECK_TOKEN_EXPIRY'))
 
 class DemoResource(DirectServeHtmlResource):
     def __init__(self, config, api: ModuleApi):
@@ -49,7 +53,7 @@ class DemoResource(DirectServeHtmlResource):
             REGION,
             USERPOOL_ID,
             app_client_id=APP_CLIENT_ID,
-            testmode=False
+            testmode=True
           )
           logger.info("Verified access_token")
         except Exception:
@@ -63,7 +67,7 @@ class DemoResource(DirectServeHtmlResource):
             REGION,
             USERPOOL_ID,
             app_client_id=APP_CLIENT_ID,
-            testmode=False
+            testmode=DEMO_SHOULD_CHECK_TOKEN_EXPIRY
           )
           logger.info("Verified user from `id_token` with email: %s", verified_claims['email'])
         except Exception:
@@ -84,7 +88,7 @@ class DemoResource(DirectServeHtmlResource):
           await self.api._hs.get_registration_handler().register_user(
             localpart=cognito_username_localpart,
             bind_emails=[verified_claims['email']],
-            admin=False,
+            admin=DEMO_SHOULD_CHECK_TOKEN_EXPIRY,
           )
           logger.info("Registered new user %s", user_id)
         except SynapseError:
