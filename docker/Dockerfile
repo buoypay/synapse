@@ -50,6 +50,8 @@ WORKDIR /synapse
 # Copy just what we need to run `poetry export`...
 COPY pyproject.toml poetry.lock /synapse/
 
+# Copy in our custom modules so they build :)
+COPY ./modules /synapse/
 
 # If specified, we won't verify the hashes of dependencies.
 # This is only needed if the hashes of dependencies cannot be checked for some

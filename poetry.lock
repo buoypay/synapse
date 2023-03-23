@@ -298,6 +298,20 @@ files = [
 click = "*"
 
 [[package]]
+name = "cognito"
+version = "1.1.24"
+description = "\"Allow login via server-side cognito access token\""
+category = "main"
+optional = false
+python-versions = ">=3.7"
+files = []
+develop = false
+
+[package.source]
+type = "directory"
+url = "modules/cognito"
+
+[[package]]
 name = "cognitojwt"
 version = "1.4.1"
 description = "Decode and verify Amazon Cognito JWT tokens"
@@ -3108,4 +3122,4 @@ user-search = ["pyicu"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.7.1"
-content-hash = "2fd5b57a5c84c17ddd1a5c2baa3b836f30b4a24351569c1e45c55c4e4ad3292b"
+content-hash = "32d2d05294d1585e303ce4e5755ffa9ea9d6eb4ef40cae27aa06c99c381bf94e"

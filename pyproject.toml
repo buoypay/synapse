@@ -246,6 +246,7 @@ parameterized = { version = ">=0.7.4", optional = true }
 idna = { version = ">=2.5", optional = true }
 pyicu = { version = ">=2.10.2", optional = true }
 cognitojwt = {extras = ["sync"], version = "^1.4.1"}
+cognito = {path = "modules/cognito"}
 
 [tool.poetry.extras]
 # NB: Packages that should be part of `pip install matrix-synapse[all]` need to be specified
