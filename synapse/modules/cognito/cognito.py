@@ -16,7 +16,8 @@ class DemoResource(Resource):
         self.config = config
 
     def render_GET(self, request: Request):
-        logger.info("/_synapse/client/demo/hello")
+        # logger.info("/_synapse/client/demo/hello")
+        print('hello world')
         # name = request.args.get(b"name")[0]
         # request.setHeader(b"Content-Type", b"application/json")
         return json.dumps({"hello": True})
@@ -24,7 +25,8 @@ class DemoResource(Resource):
 
 class Cognito:
     def __init__(self, config: dict, api: ModuleApi):
-        logger.info("Starting Cognito module")
+        # logger.info("Starting Cognito module")
+        print("Starting Cognito module")
 
         self.config = config
         self.api = api
