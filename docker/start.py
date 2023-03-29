@@ -268,6 +268,16 @@ running with 'migrate_config'. See the README for more details.
 
         args += ["--config-path", config_path]
 
+        # See if there's a second config config path specified
+        config_dir = environ.get("SYNAPSE_CONFIG_DIR", "/data")
+        secrets_config_path = environ.get(
+            "SYNAPSE_SECRET_CONFIG_PATH", config_dir + "/homeserver.secrets.yaml"
+        )
+        if os.path.exists(secrets_config_path):
+            log("Loadiing additional config path:" + secrets_config_path)
+            args += ["--config-path", secrets_config_path]
+        
+
     log("Starting synapse with args " + " ".join(args))
 
     args = [sys.executable] + args
